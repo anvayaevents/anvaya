@@ -1,0 +1,262 @@
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anvaya Events | Folder Renamer</title>
+    <!-- JSZip Library for bundling files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 { color: #1a73e8; margin-bottom: 10px; }
+        p { color: #5f6368; font-size: 14px; }
+        .path-display {
+            background: #e8f0fe;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+        .btn-container { margin-top: 25px; }
+        input[type="file"] { display: none; }
+        
+        .label-btn {
+            background: #1a73e8;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-block;
+            transition: 0.2s;
+        }
+        .label-btn:hover { background: #1557b0; }
+
+        #convertBtn {
+            background: #34a853;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            display: none; /* Hidden until folder is selected */
+        }
+        #status { margin-top: 15px; font-weight: bold; color: #34a853; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>Anvaya Events</h1>
+    <p>Select the folder: <strong>D:\ravi\Anvaya Events\</strong></p>
+    
+    <div class="btn-container">
+        <!-- webkitdirectory allows folder selection -->
+        <label for="folderInput" class="label-btn">Step 1: Select Folder</label>
+        <input type="file" id="folderInput" webkitdirectory mozdirectory msdirectory odirectory directory multiple>
+    </div>
+
+    <div id="pathPreview" class="path-display">No folder selected</div>
+    
+    <button id="convertBtn">Step 2: Rename & Download ZIP</button>
+    <div id="status"></div>
+</div>
+
+<script>
+    const folderInput = document.getElementById('folderInput');
+    const pathPreview = document.getElementById('pathPreview');
+    const convertBtn = document.getElementById('convertBtn');
+    const status = document.getElementById('status');
+
+    let filesArray = [];
+
+    folderInput.addEventListener('change', (e) => {
+        // Filter only images
+        filesArray = Array.from(e.target.files).filter(file => 
+            file.type.startsWith('image/')
+        );
+
+        if (filesArray.length > 0) {
+            pathPreview.innerText = `Detected ${filesArray.length} images in: ${filesArray[0].webkitRelativePath.split('/')[0]}`;
+            convertBtn.style.display = 'inline-block';
+            status.innerText = "";
+        } else {
+            pathPreview.innerText = "No images found in this folder.";
+            convertBtn.style.display = 'none';
+        }
+    });
+
+    convertBtn.onclick = async () => {
+        status.innerText = "Processing... please wait.";
+        const zip = new JSZip();
+        
+        // Loop through images and add to Zip with new names (1.jpg, 2.jpg...)
+        filesArray.forEach((file, index) => {
+            const extension = file.name.split('.').pop();
+            const newName = `${index + 1}.${extension}`;
+            zip.file(newName, file);
+        });
+
+        const content = await zip.generateAsync({type: "blob"});
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(content);
+        link.download = "Anvaya_Events_Renamed.zip";
+        link.click();
+        
+        status.innerText = "Done! Check your downloads.";
+    };
+</script>
+
+</body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anvaya Events | Folder Renamer</title>
+    <!-- JSZip Library for bundling files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 { color: #1a73e8; margin-bottom: 10px; }
+        p { color: #5f6368; font-size: 14px; }
+        .path-display {
+            background: #e8f0fe;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+        .btn-container { margin-top: 25px; }
+        input[type="file"] { display: none; }
+        
+        .label-btn {
+            background: #1a73e8;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-block;
+            transition: 0.2s;
+        }
+        .label-btn:hover { background: #1557b0; }
+
+        #convertBtn {
+            background: #34a853;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            display: none; /* Hidden until folder is selected */
+        }
+        #status { margin-top: 15px; font-weight: bold; color: #34a853; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>Anvaya Events</h1>
+    <p>Select the folder: <strong>D:\ravi\Anvaya Events\</strong></p>
+    
+    <div class="btn-container">
+        <!-- webkitdirectory allows folder selection -->
+        <label for="folderInput" class="label-btn">Step 1: Select Folder</label>
+        <input type="file" id="folderInput" webkitdirectory mozdirectory msdirectory odirectory directory multiple>
+    </div>
+
+    <div id="pathPreview" class="path-display">No folder selected</div>
+    
+    <button id="convertBtn">Step 2: Rename & Download ZIP</button>
+    <div id="status"></div>
+</div>
+
+<script>
+    const folderInput = document.getElementById('folderInput');
+    const pathPreview = document.getElementById('pathPreview');
+    const convertBtn = document.getElementById('convertBtn');
+    const status = document.getElementById('status');
+
+    let filesArray = [];
+
+    folderInput.addEventListener('change', (e) => {
+        // Filter only images
+        filesArray = Array.from(e.target.files).filter(file => 
+            file.type.startsWith('image/')
+        );
+
+        if (filesArray.length > 0) {
+            pathPreview.innerText = `Detected ${filesArray.length} images in: ${filesArray[0].webkitRelativePath.split('/')[0]}`;
+            convertBtn.style.display = 'inline-block';
+            status.innerText = "";
+        } else {
+            pathPreview.innerText = "No images found in this folder.";
+            convertBtn.style.display = 'none';
+        }
+    });
+
+    convertBtn.onclick = async () => {
+        status.innerText = "Processing... please wait.";
+        const zip = new JSZip();
+        
+        // Loop through images and add to Zip with new names (1.jpg, 2.jpg...)
+        filesArray.forEach((file, index) => {
+            const extension = file.name.split('.').pop();
+            const newName = `${index + 1}.${extension}`;
+            zip.file(newName, file);
+        });
+
+        const content = await zip.generateAsync({type: "blob"});
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(content);
+        link.download = "Anvaya_Events_Renamed.zip";
+        link.click();
+        
+        status.innerText = "Done! Check your downloads.";
+    };
+</script>
+
+</body>
+>>>>>>> e110670 (Upload images and update gallery design)
+</html>

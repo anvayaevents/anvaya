@@ -1,0 +1,774 @@
+<!-- # Professional Anvaya Events Gallery (Tailwind + Fixed Image Fetch)
+
+
+html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Anvaya Events</title>
+
+<link rel="icon" type="image/x-icon" href="favicon.jpg">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+
+body{
+    font-family:'Inter',sans-serif;
+    background:#050505;
+    overflow-x:hidden;
+}
+
+.luxury-font{
+    font-family:'Cormorant Garamond',serif;
+}
+
+.hero-overlay{
+    background:linear-gradient(to bottom, rgba(0,0,0,.2), rgba(0,0,0,.85));
+}
+
+.glass{
+    background:rgba(255,255,255,.05);
+    backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.gallery-column{
+    column-count:3;
+    column-gap:24px;
+}
+
+.gallery-card{
+    break-inside:avoid;
+    margin-bottom:24px;
+}
+
+.gallery-card img{
+    transition:transform .7s ease;
+}
+
+.gallery-card:hover img{
+    transform:scale(1.05);
+}
+
+.lightbox{
+    display:none;
+}
+
+/* Lightbox image rotation and transitions */
+#lightboxImg{
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lightbox-btn{
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+.lightbox-btn:hover{
+    opacity: 1;
+    transform: scale(1.15);
+    text-shadow: 0 0 20px rgba(217, 119, 6, 0.6);
+}
+
+.lightbox-btn:active{
+    transform: scale(0.95);
+}
+
+.lightbox-controls{
+    transition: opacity 0.3s ease;
+    opacity: 1;
+}
+
+.lightbox-controls.hidden{
+    opacity: 0;
+    pointer-events: none;
+}
+
+.control-panel{
+    animation: slideUp 0.4s ease forwards;
+}
+
+@keyframes slideUp{
+    from{
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to{
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.shortcuts-info{
+    animation: slideIn 0.4s ease forwards;
+}
+
+@keyframes slideIn{
+    from{
+        transform: translateX(30px);
+        opacity: 0;
+    }
+    to{
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@media(max-width:1000px){
+    .gallery-column{
+        column-count:2;
+    }
+}
+
+@media(max-width:700px){
+    .gallery-column{
+        column-count:1;
+    }
+}
+
+</style>
+</head>
+
+<body class="text-white">
+
+<!-- NAVBAR -->
+<nav class="fixed top-0 left-0 w-full z-50 glass px-6 md:px-16 py-5 flex items-center justify-between">
+    <h1 class="luxury-font text-4xl font-bold tracking-[5px] text-amber-300">
+      <span>
+  <img src="favicon.jpg" alt="Anvaya Events" class="w-12 h-12 rounded-full inline-block">
+</span>  ANVAYA EVENTS
+    </h1>
+
+    <div class="hidden md:flex gap-10 uppercase tracking-[2px] text-sm">
+        <a href="#" class="hover:text-amber-300 transition">Home</a>
+        <a href="#gallery" class="hover:text-amber-300 transition">Gallery</a>
+        <a href="#contact" class="hover:text-amber-300 transition">Contact</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="relative min-h-screen grid grid-cols-1 lg:grid-cols-2 items-center bg-black text-white overflow-hidden">
+    
+    <!-- Left 50%: Landscape Video Container -->
+    <div class="w-full h-full flex items-center justify-center bg-zinc-900 px-4 py-8 lg:p-12">
+        <!-- Main 16:9 Aspect Ratio Frame -->
+        <div class="w-full aspect-video rounded-xl overflow-hidden shadow-2xl border border-white/10 relative bg-black flex items-center justify-center">
+            
+            <!-- Cross-Browser Rotated Wrapper (Scale adjusted to 100 to let the video fit entirely) -->
+            <div class="absolute w-full h-[56.25vw] -rotate-90 scale-100 flex items-center justify-center origin-center">
+                <video 
+                    id="heroVideo"
+                    class="w-full h-full object-contain" 
+                    autoplay 
+                    muted 
+                    loop 
+                    playsinline
+                    webkit-playsinline
+                    controls> 
+                    <source src="anvaya.MP4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Right 50%: Content Container -->
+    <div class="relative z-10 max-w-2xl px-6 py-12 lg:py-0 lg:pl-12 text-left">
+
+        <p class="uppercase tracking-[6px] text-amber-300 mb-5 text-sm">
+            Luxury Event Storytelling
+        </p>
+
+        <h1 class="luxury-font text-4xl md:text-6xl leading-tight mb-6 font-semibold">
+            Moments Crafted Into Timeless Experiences
+        </h1>
+
+        <p class="text-gray-300 leading-relaxed text-base md:text-lg">
+            Anvaya Events curates extraordinary weddings, destination celebrations,
+            luxury experiences, and cinematic memories with emotional storytelling.
+        </p>
+
+        <div class="flex flex-wrap gap-4 mt-8">
+            <a href="#gallery" class="bg-amber-300 text-black px-8 py-4 rounded-full font-semibold hover:scale-105 transition duration-300 inline-block text-center">
+                Explore Gallery
+            </a>
+
+            <a href="#contact" class="border border-white/20 bg-white/5 px-8 py-4 rounded-full hover:bg-white/10 transition duration-300 inline-block text-center">
+                Book Consultation
+            </a>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- Script to handle Autoplay unmuting and 50% Volume Settings -->
+
+
+
+<!-- STATS -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-8 px-6 md:px-16 py-24">
+
+    <div class="glass rounded-3xl p-12 text-center hover:-translate-y-2 transition duration-500">
+        <h2 class="luxury-font text-6xl text-amber-300 font-bold">500+</h2>
+        <p class="mt-4 text-gray-300">Luxury Celebrations</p>
+    </div>
+
+    <div class="glass rounded-3xl p-12 text-center hover:-translate-y-2 transition duration-500">
+        <h2 class="luxury-font text-6xl text-amber-300 font-bold">98%</h2>
+        <p class="mt-4 text-gray-300">Client Satisfaction</p>
+    </div>
+
+</section>
+
+<!-- TITLE -->
+<section class="text-center px-6 py-10">
+    <p class="uppercase tracking-[4px] text-amber-300 text-sm">
+        Luxury Gallery
+    </p>
+
+    <h2 class="luxury-font text-5xl md:text-7xl mt-4">
+        Curated Event Experiences
+    </h2>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery" class="px-6 md:px-16 pb-24">
+
+    <div id="loadingSpinner" class="fixed inset-0 bg-black/95 flex items-center justify-center z-[9998]">
+        <div class="text-center">
+            <div class="w-16 h-16 border-4 border-gray-600 border-t-amber-300 rounded-full animate-spin mx-auto mb-6"></div>
+            <p class="text-gray-400 text-lg">Loading Gallery...</p>
+        </div>
+    </div>
+
+    <div id="galleryContainer" class="gallery-column"></div>
+
+    <div id="loading" class="text-center py-10 text-gray-400 text-lg">
+        No images found.
+    </div>
+
+</section>
+
+<!-- TESTIMONIAL -->
+<section class="px-6 md:px-16 py-24">
+
+    <div class="glass rounded-[40px] max-w-5xl mx-auto p-10 md:p-16 text-center">
+
+        <h3 class="luxury-font text-3xl md:text-5xl leading-relaxed">
+            “Anvaya Events transformed our wedding into a cinematic dream that felt straight out of a luxury editorial.”
+        </h3>
+
+        <p class="mt-8 tracking-[3px] text-amber-300 uppercase">
+            — SIVASUNDAR
+        </p>
+
+        <p class="mt-2 text-gray-300">
+            +91 8870881716
+        </p>
+        <p class="mt-2 text-gray-300">
+            Locations : Coimbatore , Tiruppur .
+        </p>
+    </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer id="contact" class="border-t border-white/10 py-20 px-6 text-center">
+
+    <h2 class="luxury-font text-5xl text-amber-300 mb-6">
+        Anvaya Events
+    </h2>
+
+    <p class="max-w-3xl mx-auto text-gray-400 leading-8">
+        We transform celebrations into immersive luxury experiences through elegant storytelling and unforgettable event craftsmanship.
+    </p>
+
+</footer>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" class="lightbox fixed inset-0 bg-black/95 z-[9999] items-center justify-center p-5 group">
+
+    <!-- Close Button -->
+    <button id="closeBtn" class="absolute top-5 right-8 text-5xl text-white lightbox-btn lightbox-controls" title="Close (Esc or Q)">
+        ×
+    </button>
+
+    <!-- Previous Button -->
+    <button id="prevBtn" class="absolute left-5 md:left-8 top-1/2 -translate-y-1/2 text-4xl md:text-5xl text-white lightbox-btn lightbox-controls" title="Previous (← or P)">
+        ‹
+    </button>
+
+    <!-- Image Container with rotation -->
+    <div class="relative flex items-center justify-center">
+        <img id="lightboxImg" class="max-w-[95%] max-h-[90vh] rounded-3xl shadow-2xl" />
+    </div>
+
+    <!-- Next Button -->
+    <button id="nextBtn" class="absolute right-5 md:right-8 top-1/2 -translate-y-1/2 text-4xl md:text-5xl text-white lightbox-btn lightbox-controls" title="Next (→ or N)">
+        ›
+    </button>
+
+    <!-- Rotate Button (Top Center) -->
+    <button id="rotateBtn" class="absolute top-5 left-1/2 -translate-x-1/2 bg-amber-400/20 border-2 border-amber-400 text-amber-400 px-4 py-2 rounded-full font-semibold lightbox-btn lightbox-controls hover:bg-amber-400/40" title="Rotate (R)">
+        ↻ Rotate
+    </button>
+
+    <!-- Mobile bottom controls -->
+    <div class="absolute bottom-5 left-0 right-0 flex justify-center gap-2 md:gap-4 md:hidden flex-wrap px-4 control-panel">
+        <button id="mobilePrevBtn" class="bg-amber-300/20 border border-amber-300 text-amber-300 px-3 py-2 rounded-full text-xs font-semibold hover:bg-amber-300/40 transition lightbox-btn">
+            ← Prev
+        </button>
+        <button id="mobileRotateBtn" class="bg-blue-500/20 border border-blue-500 text-blue-500 px-3 py-2 rounded-full text-xs font-semibold hover:bg-blue-500/40 transition lightbox-btn">
+            ↻ Rotate
+        </button>
+        <button id="mobileCloseBtn" class="bg-red-500/20 border border-red-500 text-red-500 px-3 py-2 rounded-full text-xs font-semibold hover:bg-red-500/40 transition lightbox-btn">
+            Close
+        </button>
+        <button id="mobileNextBtn" class="bg-amber-300/20 border border-amber-300 text-amber-300 px-3 py-2 rounded-full text-xs font-semibold hover:bg-amber-300/40 transition lightbox-btn">
+            Next →
+        </button>
+    </div>
+
+
+    <!-- Shortcuts info (Updated to show above mobile buttons without overlap) -->
+    <div class="absolute bottom-24 left-5 right-5 md:bottom-5 md:left-auto md:right-5 block text-center md:text-left text-xs text-gray-500 bg-black/50 p-3 rounded-lg lightbox-controls shortcuts-info">
+        <p class="font-semibold mb-2 text-amber-400">⌨ Shortcuts:</p>
+        <p class="text-gray-400">← / P = Previous | → / N = Next</p>
+        <p class="text-gray-400">R = Rotate | Space = Next</p>
+        <p class="text-gray-400">Esc / Q = Close</p>
+        <p class="text-gray-400 mt-2 border-t border-gray-600 pt-2">Swipe = Navigate | Scroll = Navigate</p>
+    </div>
+
+    <!-- Image counter/indicator -->
+    <div class="absolute top-5 left-5 bg-black/50 text-amber-300 px-4 py-2 rounded-full text-sm font-semibold lightbox-controls">
+        <span id="imageCounter">1</span> / <span id="imageTotal">1</span>
+    </div>
+
+</div>
+
+<script>
+
+const galleryContainer = document.getElementById('galleryContainer');
+const loading = document.getElementById('loading');
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+
+let images = [];
+let currentIndex = 0;
+let currentRotation = 0;
+let controlsHideTimeout = null;
+
+// Fetch JSON
+async function fetchGallery(){
+
+    try{
+
+        console.log('Starting to fetch data.json...');
+
+        const response = await fetch('./data.json');
+        
+        console.log('Response status:', response.status);
+        
+        if(!response.ok){
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        console.log('JSON parsed successfully. Total items:', data.length);
+
+        // Filter valid images
+        images = data.filter(item => {
+
+            return item.extensions &&
+                   (item.extensions.jpg || item.extensions.jpeg || item.extensions.png);
+        });
+
+        console.log('Filtered images:', images.length);
+
+        if(images.length === 0){
+            document.getElementById('loadingSpinner').style.display = 'none';
+            loading.innerHTML = 'No valid images found in data.json.';
+            return;
+        }
+
+        renderGallery();
+
+    }catch(error){
+
+        console.error('Gallery fetch error:', error);
+        console.error('Error details:', error.message);
+
+        document.getElementById('loadingSpinner').style.display = 'none';
+        loading.innerHTML = `Failed to load gallery images: ${error.message}`;
+    }
+}
+
+function getImageUrl(item){
+
+    // Use local images with fallback
+    if(item.extensions.jpg){
+        return `images/${item.extensions.jpg}`;
+    }
+    if(item.extensions.jpeg){
+        return `images/${item.extensions.jpeg}`;
+    }
+    if(item.extensions.png){
+        return `images/${item.extensions.png}`;
+    }
+    if(item.link){
+        return item.link;
+    }
+    return null;
+}
+
+function renderGallery(){
+
+    galleryContainer.innerHTML = '';
+
+    if(images.length === 0){
+        document.getElementById('loadingSpinner').style.display = 'none';
+        loading.innerHTML = 'No images found.';
+        return;
+    }
+
+    let loadedCount = 0;
+    let processedCount = 0;
+    const totalImages = images.length;
+
+    images.forEach((item,index)=>{
+
+        const imageUrl = getImageUrl(item);
+
+        if(!imageUrl){
+            processedCount++;
+            checkAllLoaded();
+            return;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'gallery-card group relative overflow-hidden rounded-[30px] bg-neutral-900 shadow-2xl';
+
+        card.innerHTML = `
+
+            <img
+                src="${imageUrl}"
+                alt="Anvaya Event"
+                class="w-full rounded-[30px] object-cover"
+            >
+
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-8">
+
+                <div class="bg-amber-300/20 border border-amber-300/20 text-amber-100 text-xs tracking-[2px] uppercase px-4 py-2 rounded-full w-max mb-5">
+                    Luxury Experience
+                </div>
+
+                <h3 class="luxury-font text-4xl mb-3">
+                    Anvaya Events ${index + 1}
+                </h3>
+
+                <p class="text-gray-300 leading-7">
+                    Elegant storytelling with timeless luxury aesthetics.
+                </p>
+
+            </div>
+        `;
+
+        card.addEventListener('click',()=>{
+            openLightbox(index);
+        });
+
+        galleryContainer.appendChild(card);
+
+    });
+
+    // Hide spinner after a short delay to let images start loading
+    setTimeout(() => {
+        document.getElementById('loadingSpinner').style.display = 'none';
+        console.log(`Gallery rendered with ${totalImages} images`);
+    }, 500);
+}
+
+function openLightbox(index){
+
+    currentIndex = index;
+    currentRotation = 0;
+
+    lightbox.style.display = 'flex';
+
+    lightboxImg.src = getImageUrl(images[currentIndex]);
+    lightboxImg.style.transform = `rotate(${currentRotation}deg)`;
+
+    document.body.style.overflow = 'hidden';
+    
+    // Update counter
+    updateImageCounter();
+    
+    // Show controls
+    showLightboxControls();
+}
+
+function closeLightbox(){
+
+    lightbox.style.display = 'none';
+
+    document.body.style.overflow = 'auto';
+}
+
+function nextImage(){
+
+    currentIndex = (currentIndex + 1) % images.length;
+    currentRotation = 0;
+
+    lightboxImg.src = getImageUrl(images[currentIndex]);
+    lightboxImg.style.transform = `rotate(${currentRotation}deg)`;
+    
+    updateImageCounter();
+    showLightboxControls();
+}
+
+function prevImage(){
+
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    currentRotation = 0;
+
+    lightboxImg.src = getImageUrl(images[currentIndex]);
+    lightboxImg.style.transform = `rotate(${currentRotation}deg)`;
+    
+    updateImageCounter();
+    showLightboxControls();
+}
+
+function rotateImage(){
+    currentRotation = (currentRotation + 90) % 360;
+    lightboxImg.style.transform = `rotate(${currentRotation}deg)`;
+    showLightboxControls();
+}
+
+function updateImageCounter(){
+    const counter = document.getElementById('imageCounter');
+    const total = document.getElementById('imageTotal');
+    if(counter) counter.textContent = currentIndex + 1;
+    if(total) total.textContent = images.length;
+}
+
+function showLightboxControls(){
+    const controls = document.querySelectorAll('.lightbox-controls');
+    controls.forEach(control => {
+        control.classList.remove('hidden');
+    });
+    
+    // Clear existing timeout
+    if(controlsHideTimeout) clearTimeout(controlsHideTimeout);
+    
+    // Hide controls after 5 seconds of inactivity
+    controlsHideTimeout = setTimeout(() => {
+        controls.forEach(control => {
+            control.classList.add('hidden');
+        });
+    }, 5000);
+}
+
+// Events
+
+document.getElementById('closeBtn').onclick = closeLightbox;
+document.getElementById('nextBtn').onclick = nextImage;
+document.getElementById('prevBtn').onclick = prevImage;
+document.getElementById('rotateBtn').onclick = rotateImage;
+
+// Mobile button events
+document.getElementById('mobileNextBtn').onclick = nextImage;
+document.getElementById('mobilePrevBtn').onclick = prevImage;
+document.getElementById('mobileCloseBtn').onclick = closeLightbox;
+document.getElementById('mobileRotateBtn').onclick = rotateImage;
+
+lightbox.addEventListener('click',(e)=>{
+    if(e.target === lightbox){
+        closeLightbox();
+    }
+});
+
+// Mouse wheel navigation
+lightbox.addEventListener('wheel', (e) => {
+    if(lightbox.style.display === 'flex'){
+        e.preventDefault();
+        if(e.deltaY > 0) nextImage();
+        else prevImage();
+    }
+}, { passive: false });
+
+// Touch swipe navigation
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+
+lightbox.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+}, false);
+
+lightbox.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+    handleSwipe();
+}, false);
+
+function handleSwipe(){
+    const diffX = touchEndX - touchStartX;
+    const diffY = touchEndY - touchStartY;
+    
+    // Horizontal swipe (at least 50px and more horizontal than vertical)
+    if(Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50){
+        if(diffX > 0) prevImage();  // Swipe right = previous
+        else nextImage();            // Swipe left = next
+    }
+}
+
+// Keyboard navigation with enhanced shortcuts
+document.addEventListener('keydown',(e)=>{
+
+    if(lightbox.style.display === 'flex'){
+        switch(e.key){
+            case 'ArrowRight':
+            case 'n':
+            case 'N':
+            case ' ':
+                e.preventDefault();
+                nextImage();
+                break;
+            case 'ArrowLeft':
+            case 'p':
+            case 'P':
+                e.preventDefault();
+                prevImage();
+                break;
+            case 'Escape':
+            case 'q':
+            case 'Q':
+                e.preventDefault();
+                closeLightbox();
+                break;
+        }
+    }
+});
+
+// Animations
+
+gsap.from('nav',{
+    y:-80,
+    opacity:0,
+    duration:1
+});
+
+gsap.from('.hero-overlay',{
+    opacity:0,
+    duration:2
+});
+
+gsap.from('.hero h1',{
+    y:100,
+    opacity:0,
+    duration:1.5,
+    ease:'power4.out'
+});
+
+gsap.from('.hero p',{
+    y:50,
+    opacity:0,
+    duration:1.2,
+    delay:.4
+});
+
+// Diagnostic function
+window.testFetch = async function(){
+    console.log('Testing fetch...');
+    try {
+        const response = await fetch('./data.json');
+        console.log('Fetch response status:', response.status);
+        const text = await response.text();
+        console.log('Response text length:', text.length);
+        console.log('First 100 chars:', text.substring(0, 100));
+        const data = JSON.parse(text);
+        console.log('Parsed JSON successfully. Items:', data.length);
+        return data;
+    } catch(e) {
+        console.error('Fetch test error:', e);
+    }
+};
+
+
+
+
+<!-- Script to handle Autoplay unmuting and 50% Volume Settings -->
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const video = document.getElementById('heroVideo');
+        
+        if (video) {
+            // Set audio volume baseline to 50%
+            video.volume = 0.5;
+
+            // Handle the modern browser autoplay restrictions smoothly
+            video.play().then(() => {
+                video.muted = false; 
+            }).catch(error => {
+                console.log("Autoplay audio blocked by browser safety standard. Video playing muted.", error);
+            });
+        }
+    });
+
+
+// Start
+console.log('Page loaded. Current directory context: ' + window.location.href);
+console.log('Attempting to load gallery...');
+fetchGallery();
+
+</script>
+
+</body>
+</html>
+<!--
+
+
+## Fixed Image Fetch Issues
+
+### Updated Logic
+
+* Uses item.link directly from data.json
+* Supports raw GitHub image URLs
+* Removes broken images automatically
+* Added loading state
+* Added fallback handling
+
+### Expected JSON Format
+
+
+json
+[
+  {
+    "image_name": 1,
+    "extensions": {
+      "jpg": "1.jpg",
+      "jpeg": null,
+      "png": null
+    },
+    "link": "https://raw.githubusercontent.com/7ravichandran96/anvaya/refs/heads/main/images/1.jpg"
+  }
+]
+ -->  
+<!-- update this changes with this code -->
