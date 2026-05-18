@@ -390,18 +390,15 @@ async function fetchGallery(){
         
         console.log('JSON parsed successfully. Total items:', data.length);
 
-        // Filter valid images
-        images = data.filter(item => {
-
-            return item.extensions &&
-                   (item.extensions.jpg || item.extensions.jpeg || item.extensions.png);
-        });
+        // Filter valid images by available image sources
+        images = data.filter(item => getImageUrl(item) !== null);
 
         console.log('Filtered images:', images.length);
 
         if(images.length === 0){
             document.getElementById('loadingSpinner').style.display = 'none';
             loading.innerHTML = 'No valid images found in data.json.';
+            loading.style.display = 'block';
             return;
         }
 
@@ -442,31 +439,39 @@ function renderGallery(){
     if(images.length === 0){
         document.getElementById('loadingSpinner').style.display = 'none';
         loading.innerHTML = 'No images found.';
+        loading.style.display = 'block';
         return;
     }
 
-    let loadedCount = 0;
     let processedCount = 0;
     const totalImages = images.length;
+    const loadedItems = [];
 
-    images.forEach((item,index)=>{
+    function finalizeGallery(){
+        images = loadedItems;
+        document.getElementById('loadingSpinner').style.display = 'none';
 
-        const imageUrl = getImageUrl(item);
-
-        if(!imageUrl){
-            processedCount++;
-            checkAllLoaded();
-            return;
+        if(images.length === 0){
+            loading.innerHTML = 'No valid images found in gallery.';
+            loading.style.display = 'block';
+        } else {
+            loading.style.display = 'none';
         }
 
+        console.log(`Gallery rendered with ${images.length} valid images`);
+    }
+
+    function createGalleryCard(item, displayIndex, imageUrl){
         const card = document.createElement('div');
         card.className = 'gallery-card group relative overflow-hidden rounded-[30px] bg-neutral-900 shadow-2xl';
 
-        card.innerHTML = `
+        const title = item.image_name ? `Anvaya Event ${item.image_name}` : `Anvaya Event ${displayIndex + 1}`;
+        const altText = `${title} image`;
 
+        card.innerHTML = `
             <img
                 src="${imageUrl}"
-                alt="Anvaya Event"
+                alt="${altText}"
                 class="w-full rounded-[30px] object-cover"
             >
 
@@ -477,7 +482,7 @@ function renderGallery(){
                 </div>
 
                 <h3 class="luxury-font text-4xl mb-3">
-                    Anvaya Events ${index + 1}
+                    ${title}
                 </h3>
 
                 <p class="text-gray-300 leading-7">
@@ -488,28 +493,55 @@ function renderGallery(){
         `;
 
         card.addEventListener('click',()=>{
-            openLightbox(index);
+            openLightbox(displayIndex);
         });
 
-        galleryContainer.appendChild(card);
+        return card;
+    }
 
+    images.forEach((item)=>{
+        const imageUrl = getImageUrl(item);
+
+        if(!imageUrl){
+            processedCount++;
+            if(processedCount === totalImages) finalizeGallery();
+            return;
+        }
+
+        const preload = new Image();
+        preload.onload = () => {
+            const displayIndex = loadedItems.length;
+            loadedItems.push(item);
+            galleryContainer.appendChild(createGalleryCard(item, displayIndex, imageUrl));
+            processedCount++;
+            if(processedCount === totalImages) finalizeGallery();
+        };
+
+        preload.onerror = () => {
+            console.warn('Skipping invalid image:', imageUrl);
+            processedCount++;
+            if(processedCount === totalImages) finalizeGallery();
+        };
+
+        preload.src = imageUrl;
     });
-
-    // Hide spinner after a short delay to let images start loading
-    setTimeout(() => {
-        document.getElementById('loadingSpinner').style.display = 'none';
-        console.log(`Gallery rendered with ${totalImages} images`);
-    }, 500);
 }
 
 function openLightbox(index){
+    if(images.length === 0 || !images[index]){
+        return;
+    }
 
     currentIndex = index;
     currentRotation = 0;
 
-    lightbox.style.display = 'flex';
+    const imageUrl = getImageUrl(images[currentIndex]);
+    if(!imageUrl){
+        return;
+    }
 
-    lightboxImg.src = getImageUrl(images[currentIndex]);
+    lightbox.style.display = 'flex';
+    lightboxImg.src = imageUrl;
     lightboxImg.style.transform = `rotate(${currentRotation}deg)`;
 
     document.body.style.overflow = 'hidden';
@@ -529,6 +561,9 @@ function closeLightbox(){
 }
 
 function nextImage(){
+    if(images.length === 0){
+        return;
+    }
 
     currentIndex = (currentIndex + 1) % images.length;
     currentRotation = 0;
@@ -541,6 +576,9 @@ function nextImage(){
 }
 
 function prevImage(){
+    if(images.length === 0){
+        return;
+    }
 
     currentIndex = (currentIndex - 1 + images.length) % images.length;
     currentRotation = 0;
